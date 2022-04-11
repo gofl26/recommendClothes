@@ -1,6 +1,6 @@
 const express = require('express');
 const connect = require('./schemas');
-// const cors = require("cors");
+const cors = require("cors");
 const app = express();
 const port = 3000;
 
@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
 //   };
   
 // app.use(cors(corsOption));
-
+app.use(cors());
 // app.get("/cors-test", (req, res) => {
 // res.send("hi");
 // });
