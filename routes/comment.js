@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
 
 // 코멘트등록
 router.post('/comment/:id', authMiddleware, async (req, res) => {
-    let { id } = res.params;
+    const { id } = req.params;
 
     let today = new Date();
     let date = today.toLocaleString();
@@ -22,11 +22,11 @@ router.post('/comment/:id', authMiddleware, async (req, res) => {
 
     const { comment, image } = req.body;
 
-    if (!comment) {
-        return res.status(400).json({
-            errorMessage: ' 댓글을 입력해 주세요',
-        });
-    }
+    // if (!comment) {
+    //     return res.status(400).json({
+    //         errorMessage: ' 댓글을 입력해 주세요',
+    //     });
+    // }
 
     // const CryptoJS = require('crypto-js');
     // const moment = require('moment');
@@ -46,7 +46,7 @@ router.post('/comment/:id', authMiddleware, async (req, res) => {
     // const postId = existsPosts[existsPosts.length-1]+1;
 
     const createdComment = await Comments.create({
-        postId: Number(id),
+        postId: id,
         userId,
         userName,
         comment,
@@ -61,17 +61,17 @@ router.post('/comment/:id', authMiddleware, async (req, res) => {
     });
 });
 
-// 코멘트조회 (로그인 ~ing)
-router.get('/comment/:id', authMiddleware, async (req, res) => {
+// 코멘트조회
+router.get('/comment/:id', async (req, res) => {
     const { id } = req.params;
-    const { user } = res.locals;
+    // const { user } = res.locals;
     // let userName = user.userName;
 
     const comment = await Comments.find({ postId: id });
     const [post] = await Posts.find({ postId: id });
 
     res.json({
-        user,
+        // user,
         post,
         comment,
     });
