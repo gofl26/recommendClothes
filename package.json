@@ -1,6 +1,8 @@
 {
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.17.3",
+    "express-validator": "^6.14.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.2.10",
     "prettier": "^2.6.2"
@@ -14,5 +16,13 @@
   },
   "author": "",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gofl26/recommendClothes.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gofl26/recommendClothes/issues"
+  },
+  "homepage": "https://github.com/gofl26/recommendClothes#readme",
   "description": ""
 }

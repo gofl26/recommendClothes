@@ -9,6 +9,7 @@ const UserSchema = new mongoose.Schema({
     userName: {
         type: String,
         required: true,
+        unique: true,
     },
     password: {
         type: String,
@@ -17,12 +18,18 @@ const UserSchema = new mongoose.Schema({
     userProfile: {
         type: String,
     },
-    //gender 값을 어떤형식으로 받아오는지 물어보기
     gender: {
         type: String,
         required: true,
     },
 });
 
+// UserSchema.virtual('jwtId').get(function () {
+//     return this._id.toHexString();
+// });
+
+// UserSchema.set('toJSON', {
+//     virtuals: true,
+// });
 
 module.exports = mongoose.model('User', UserSchema);
