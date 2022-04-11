@@ -11,11 +11,11 @@ const commentsSchema = mongoose.Schema({
         required: true,
         unique: true,
     },
-    commentId: {
-        type: Number,
-        required: true,
-        unique: true,
-    },
+    // commentId: {
+    //     type: Number,
+    //     required: true,
+    //     unique: true,
+    // },
     userName: {
         type: String,
         required: true,
