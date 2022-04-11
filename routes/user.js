@@ -96,9 +96,9 @@ router.post(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-  const { userId, password, pwConfirm, userName, gender, userProfile } = req.body;
+  const { userId, password, pwConfirm, userName, gender } = req.body;
   
-  const users = new User({ userId, password, userName, gender, userProfile });
+  const users = new User({ userId, password, userName, gender });
   await users.save();
 
   // const createdUser = await URLSearchParams.create({ userId, password, userName, gender, userProfile });

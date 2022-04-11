@@ -33,7 +33,6 @@ app.get('/', (req, res) => {
 //   };
   
 // app.use(cors(corsOption));
-
 // app.get("/cors-test", (req, res) => {
 // res.send("hi");
 // });
