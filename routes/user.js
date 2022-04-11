@@ -23,20 +23,21 @@ router.post(
     .withMessage('아이디가 3글자 이상인지 확인해주세요.')
     .isAlphanumeric()
     .withMessage('아이디는 영문과 숫자만 사용가능합니다.')
+    // .custom(async  (value) =>   {
+    //   const existId = await User.findOne({userId: value})
+    //   console.log(existId)
+    //   if (existId) {
+    //     throw new Error('이미 중복된 아이디가 있습니다.');
+    //   }
+    //   return true;
+    //   }),
     .custom(value  => {
-      const existId = User.findOne({ userId: value })
-      if (existId.length) {
-        throw new Error('이미 중복된 아이디가 있습니다.');
-      }
-      return true;
-      }),
-    // .custom(value  => {
-    //   return User.findOne(value).then(user => {
-    //     if (user) {
-    //       return Promise.reject('이미 중복된 아이디가 있습니다.');
-    //     }
-    //   });
-    // }),
+      return User.findOne({userId: value}).then(user => {
+        if (user) {
+          return Promise.reject('이미 중복된 아이디가 있습니다.');
+        }
+      });
+    }),
     async (req, res) => {
       //요청에 검증에러가 있으면 찾아줌
       const errors = validationResult(req);
@@ -54,24 +55,21 @@ router.post(
   //닉네임 중복 검사
   body('userName')
     .notEmpty()
-    .withMessage('닉네임을 입력해주세요.')
     .trim()
-    .isAlphanumeric()
-    .withMessage('닉네임은 영문과 숫자만 사용가능합니다.')
-    .custom(value  => {
-      const existName = User.findOne({ userName: value })
-      if (existName.length) {
-        throw new Error('이미 중복된 닉네임이 있습니다.');
-      }
-      return true;
-      }),
-    // .custom(value => {
-    //   return User.findOne(value).then(user => {
-    //     if (user) {
-    //       return Promise.reject('이미 중복된 닉네임이 있습니다.');
-    //     }
-    //   });
-    // }),
+    // .custom(async (value)  => {
+    //   const existName = await User.findOne({ userName: value })
+    //   if (existName) {
+    //     throw new Error('이미 중복된 닉네임이 있습니다.');
+    //   }
+    //   return true;
+    //   }),
+    .custom(value => {
+      return User.findOne({userId: value}).then(user => {
+        if (user) {
+          return Promise.reject('이미 중복된 닉네임이 있습니다.');
+        }
+      });
+    }),
   // 비밀번호는 최소 4자 이상이며, 닉네임과 같은 값이 포함된 경우 회원가입에 실패로 만들기
   body('password')
     .notEmpty()
