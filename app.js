@@ -17,7 +17,6 @@ const requestMiddleware = (req, res, next) => {
 app.use(express.static('static'));
 app.use(express.json());
 app.use(requestMiddleware);
-app.use(cors());
 
 app.use('/api', express.urlencoded({ extended: false }), postsRouter);
 app.use('/api', express.urlencoded({ extended: false }), usersRouter);
@@ -28,9 +27,16 @@ app.get('/', (req, res) => {
 });
 
 //CORS 테스트 (https://test-cors.org)
+const corsOption = {
+    origin: "http://52.78.194.238",
+    credentials: true,
+  };
+  
+app.use(cors(corsOption));
+
 app.get("/cors-test", (req, res) => {
-    res.send('hi');
-  });
+res.send("hi");
+});
 
 app.listen(port, () => {
     console.log(port, '포트로 서버가 켜졌어요!');

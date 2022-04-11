@@ -4,6 +4,8 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const authMiddleware = require('../middlewares/auth-middleware');
 const { body, validationResult } = require('express-validator');
+const fs = require("fs");
+const mykey = fs.readFileSync(__dirname + "/../middlewares/key.txt").toString();
 
 router.get('/', (req, res) => {
   res.send('this is root page');
@@ -17,17 +19,24 @@ router.post(
     .notEmpty()
     .withMessage('아이디를 입력해주세요.')
     .trim()
-    .isLength({ min: 4 })
-    .withMessage('아이디가 4글자 이상인지 확인해주세요.')
+    .isLength({ min: 3 })
+    .withMessage('아이디가 3글자 이상인지 확인해주세요.')
     .isAlphanumeric()
     .withMessage('아이디는 영문과 숫자만 사용가능합니다.')
-    .custom(value => {
-      return User.find(value).then(user => {
-        if (user) {
-          return Promise.reject('이미 중복된 아이디가 있습니다.');
-        }
-      });
-    }),
+    .custom(value  => {
+      const existId = User.findOne({ userId: value })
+      if (existId.length) {
+        throw new Error('이미 중복된 아이디가 있습니다.');
+      }
+      return true;
+      }),
+    // .custom(value  => {
+    //   return User.findOne(value).then(user => {
+    //     if (user) {
+    //       return Promise.reject('이미 중복된 아이디가 있습니다.');
+    //     }
+    //   });
+    // }),
     async (req, res) => {
       //요청에 검증에러가 있으면 찾아줌
       const errors = validationResult(req);
@@ -35,7 +44,7 @@ router.post(
         return res.status(400).json({ errors: errors.array() });
       }
 
-  res.status(201).send("사용할 수 있는 아이디입니다.")
+    res.status(201).send("사용할 수 있는 아이디입니다.")
 });
 
 
@@ -45,19 +54,31 @@ router.post(
   //닉네임 중복 검사
   body('userName')
     .notEmpty()
+    .withMessage('닉네임을 입력해주세요.')
     .trim()
-    .custom(value => {
-      return User.find(value).then(user => {
-        if (user) {
-          return Promise.reject('이미 중복된 닉네임이 있습니다.');
-        }
-      });
-    }),
+    .isAlphanumeric()
+    .withMessage('닉네임은 영문과 숫자만 사용가능합니다.')
+    .custom(value  => {
+      const existName = User.findOne({ userName: value })
+      if (existName.length) {
+        throw new Error('이미 중복된 닉네임이 있습니다.');
+      }
+      return true;
+      }),
+    // .custom(value => {
+    //   return User.findOne(value).then(user => {
+    //     if (user) {
+    //       return Promise.reject('이미 중복된 닉네임이 있습니다.');
+    //     }
+    //   });
+    // }),
   // 비밀번호는 최소 4자 이상이며, 닉네임과 같은 값이 포함된 경우 회원가입에 실패로 만들기
   body('password')
     .notEmpty()
+    .withMessage('비밀번호를 입력해주세요.')
     .trim()
     .isLength({ min: 4 })
+    .withMessage('비밀번호는 4자 이상이어야 합니다.')
     .custom((value, { req }) => {
       if (value.includes(req.body.userName)) {
         throw new Error('비밀번호에 닉네임이 포함되어 있습니다.');
@@ -79,8 +100,10 @@ router.post(
     }
   const { userId, password, pwConfirm, userName, gender, userProfile } = req.body;
   
-  const user = new User({ userId, password, userName, gender, userProfile});
-  await user.save();
+  const users = new User({ userId, password, userName, gender, userProfile });
+  await users.save();
+
+  // const createdUser = await URLSearchParams.create({ userId, password, userName, gender, userProfile });
 
   res.status(201).send("회원가입 성공!")
 });
@@ -97,19 +120,19 @@ router.post('/login', async (req, res) => {
       });
       return;
   }
-  const token = jwt.sign({ jwtId: user.jwtId }, 'chuchoenhaejuot');
+  const token = jwt.sign({ userId: user.userId }, mykey);
   res.send({
       token,
   });
 });
 
-//내 정보조회//
-router.get('/auth', authMiddleware, async (req, res) => {
-  //locals에 있는 사용자정보 가져오기
-  const { user } = res.locals;
-  res.send({
-      user,
-  });
-});
+// //내 정보조회//
+// router.get('/auth', authMiddleware, async (req, res) => {
+//   //locals에 있는 사용자정보 가져오기
+//   const { user } = res.locals;
+//   res.send({
+//       user,
+//   });
+// });
 
 module.exports = router;

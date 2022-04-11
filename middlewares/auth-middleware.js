@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../schemas/user');
+const fs = require("fs");
+const mykey = fs.readFileSync(__dirname + "/key.txt").toString();
 
 module.exports = (req, res, next) => {
     const { authorization } = req.headers;
@@ -14,7 +16,7 @@ module.exports = (req, res, next) => {
 
     //jwt검증//
     try {
-        const { userId } = jwt.verify(tokenValue, 'chuchoenhaejuot');
+        const { userId } = jwt.verify(tokenValue, mykey);
         //검증 성공시 locals에 인증 정보 넣어주기//
         User.findById(userId).exec().then((user) => {
             res.locals.user = user;
