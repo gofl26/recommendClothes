@@ -24,13 +24,12 @@ router.get('/postGet', async (req, res) => {
 router.post('/postWrite', async (req, res) => {
     const today = new Date();
     const date = today.toLocaleString();
-    const { userName, title, content, image, userId } = req.body;
+    const { userName, title, content, userId } = req.body;
     
     const createdPost = await Posts.create({
         userId,
         content,
         title,
-        image,
         userName,
         date,
     });
@@ -40,13 +39,13 @@ router.post('/postWrite', async (req, res) => {
 //글 수정하기API
 router.put('/detail/:id', async (req, res) => {
     const { id } = req.params;
-    const { content, title, image } = req.body;
+    const { content, title } = req.body;
     const today = new Date();
     const date = today.toLocaleString();
 
     const createdPost = await Posts.updateOne(
         { postId: id },
-        { $set: { content, title, image, date } }
+        { $set: { content, title, date } }
     );
 
     res.json({ post: createdPost });
