@@ -6,6 +6,8 @@ const port = 3000;
 
 connect();
 
+app.use(cors());
+
 const postsRouter = require('./routes/post');
 const usersRouter = require('./routes/user');
 const commentsRouter = require('./routes/comment');
@@ -32,8 +34,7 @@ app.get('/', (req, res) => {
 //     credentials: true,
 //   };
   
-// app.use(cors(corsOption));
-app.use(cors());
+
 // app.get("/cors-test", (req, res) => {
 // res.send("hi");
 // });
