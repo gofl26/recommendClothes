@@ -6,6 +6,8 @@ const authMiddleware = require('../middlewares/auth-middleware');
 const { body, validationResult } = require('express-validator');
 const fs = require("fs");
 const mykey = fs.readFileSync(__dirname + "/../middlewares/key.txt").toString();
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 
 router.get('/', (req, res) => {
   res.send('this is root page');
@@ -106,6 +108,7 @@ router.post(
   res.status(201).send("회원가입 성공!")
 });
 
+
 //로그인//
 router.post('/login', async (req, res) => {
   const { userId, password } = req.body;
@@ -123,6 +126,16 @@ router.post('/login', async (req, res) => {
       token,
   });
 });
+
+
+//토큰정보 보내주기//
+router.post('/loginInfo', async (req, res) => { 
+  const {token} = req.body; 
+  const userInfo = jwt.decode(token);
+  res.json({ userInfo })
+  console.log(userInfo);
+});
+  
 
 // //내 정보조회//
 // router.get('/auth', authMiddleware, async (req, res) => {
