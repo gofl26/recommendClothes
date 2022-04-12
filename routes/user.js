@@ -1,6 +1,5 @@
 const express = require('express');
 const User = require('../schemas/user');
-const Profile = require('../schemas/profile');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const authMiddleware = require('../middlewares/auth-middleware');
