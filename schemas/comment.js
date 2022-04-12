@@ -26,6 +26,9 @@ const commentsSchema = mongoose.Schema({
         type: String,
         required: true,
     },
+    // userProfile: {
+    //     type: String,
+    // },
     // image: {
     //     type: String,
     // },
