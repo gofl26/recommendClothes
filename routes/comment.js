@@ -4,6 +4,7 @@ const Posts = require('../schemas/post');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const authMiddleware = require('../middlewares/auth-middleware');
+const { collection } = require('../schemas/comment');
 
 router.get('/', (req, res) => {
     res.send('this is root page');
@@ -18,9 +19,12 @@ router.post('/comment/:id', authMiddleware, async (req, res) => {
 
     const { user } = res.locals;
     let userId = user.userId;
+    // const exist = await Comments.findById('62555dc700c7e8afe8dc14b7');
+    // console.log(exist);
+
     let userName = user.userName;
 
-    const { comment, image } = req.body;
+    const { comment } = req.body;
 
     // if (!comment) {
     //     return res.status(400).json({
@@ -51,7 +55,7 @@ router.post('/comment/:id', authMiddleware, async (req, res) => {
         userName,
         comment,
         // commentId,
-        image,
+        // image,
         date,
     });
 
@@ -68,11 +72,11 @@ router.get('/comment/:id', async (req, res) => {
     // let userName = user.userName;
 
     const comment = await Comments.find({ postId: id });
-    const [post] = await Posts.find({ postId: id });
+    // const [post] = await Posts.find({ postId: id });
 
     res.json({
         // user,
-        post,
+        // post,
         comment,
     });
 });
