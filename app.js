@@ -19,6 +19,8 @@ const requestMiddleware = (req, res, next) => {
 app.use(express.static('static'));
 app.use(express.json());
 app.use(requestMiddleware);
+//multer 저장파일 조회
+app.use('/profile', express.static('uploads'));
 
 app.use('/api', express.urlencoded({ extended: false }), postsRouter);
 app.use('/api', express.urlencoded({ extended: false }), usersRouter);

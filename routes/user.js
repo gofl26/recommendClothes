@@ -6,14 +6,32 @@ const authMiddleware = require('../middlewares/auth-middleware');
 const { body, validationResult } = require('express-validator');
 const fs = require("fs");
 const mykey = fs.readFileSync(__dirname + "/../middlewares/key.txt").toString();
-// const multer = require('multer');
+
+const multer = require('multer');
+// 기타 express 코드
 // const upload = multer({ dest: 'uploads/' });
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'uploads/');
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.originalname);
+    }
+  }),
+});
 
 router.get('/', (req, res) => {
   res.send('this is root page');
 });
 
-//아이디 중복 검사(중복확인 버튼 누르면 실행)//
+//회원가입-프로필 사진 등록//
+router.post('/profile', upload.single('img'), (req, res) => {
+  console.log(req.file);
+  res.send(req.file);
+});
+
+//회원가입-아이디 중복 검사//
 router.post(
   "/idCheck", 
   // notEmpty: 비어있으면 컷!, trim: 공백없애기, isLength: 문자길이지정, isAlphanumeric: 숫자와 문자만 있는지 체크
