@@ -9,11 +9,6 @@ router.get('/', (req, res) => {
 
 //포스트 목록 불러오기(코디추천 버튼 누르면 실행)
 router.get('/postGet', async (req, res) => {
-    // const { user } = res.locals;
-    // res.send({
-    //     user,
-    // });
-
     const posts = await Posts.find();
     res.json({
         posts: posts,

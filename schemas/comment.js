@@ -2,14 +2,12 @@ const mongoose = require('mongoose');
 
 const commentsSchema = mongoose.Schema({
     postId: {
-        type: Number,
+        type: String,
         required: true,
-        
     },
     userId: {
         type: String,
         required: true,
-        
     },
     // commentId: {
     //     type: Number,
@@ -28,9 +26,9 @@ const commentsSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    image: {
-        type: String,
-    },
+    // image: {
+    //     type: String,
+    // },
     // like: {
     //     type: Number,
     // },
