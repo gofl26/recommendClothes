@@ -130,7 +130,7 @@ router.post('/login', async (req, res) => {
 
 //토큰정보 보내주기//
 router.post('/loginInfo', async (req, res) => { 
-  const {token} = req.header;
+  const {token} = req.body;
   console.log(token)
   const userInfo = jwt.decode(token);
   res.json({ userInfo })
