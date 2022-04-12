@@ -4,12 +4,12 @@ const commentsSchema = mongoose.Schema({
     postId: {
         type: Number,
         required: true,
-        unique: true,
+        
     },
     userId: {
         type: String,
         required: true,
-        unique: true,
+        
     },
     // commentId: {
     //     type: Number,
