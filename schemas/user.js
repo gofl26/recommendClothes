@@ -18,10 +18,10 @@ const UserSchema = new mongoose.Schema({
     // userProfile: {
     //     type: String,
     // },
-    // gender: {
-    //     type: String,
-    //     required: true,
-    // },
+    gender: {
+        type: String,
+        required: true,
+    },
 });
 
 // UserSchema.virtual('jwtId').get(function () {
