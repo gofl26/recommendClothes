@@ -6,8 +6,8 @@ const authMiddleware = require('../middlewares/auth-middleware');
 const { body, validationResult } = require('express-validator');
 const fs = require("fs");
 const mykey = fs.readFileSync(__dirname + "/../middlewares/key.txt").toString();
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+// const multer = require('multer');
+// const upload = multer({ dest: 'uploads/' });
 
 router.get('/', (req, res) => {
   res.send('this is root page');
