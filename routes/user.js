@@ -1,5 +1,6 @@
 const express = require('express');
 const User = require('../schemas/user');
+const Profile = require('../schemas/profile');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const authMiddleware = require('../middlewares/auth-middleware');
@@ -26,10 +27,23 @@ router.get('/', (req, res) => {
 });
 
 //회원가입-프로필 사진 등록//
-router.post('/profile', upload.single('img'), (req, res) => {
-  console.log(req.file);
-  res.send(req.file);
+router.post('/profile', upload.single('userProfile'), async (req, res) => {
+  const userProfile = req.file.originalname;
+  // const profiles = new Profile({ userProfile });
+  // console.log(profiles)
+  // await profiles.save();
+  console.log(userProfile)
+  res.send("사진이 등록되었습니다.");
 });
+
+// //프로필 사진 불러오기
+// router.get('/profileGet', async (req, res) => {
+//   const posts = await profiles.find();
+//   res.json({
+//       posts: posts,
+//   });
+// });
+
 
 //회원가입-아이디 중복 검사//
 router.post(
@@ -43,21 +57,14 @@ router.post(
     .withMessage('아이디가 3글자 이상인지 확인해주세요.')
     .isAlphanumeric()
     .withMessage('아이디는 영문과 숫자만 사용가능합니다.')
-    // .custom(async  (value) =>   {
-    //   const existId = await User.findOne({userId: value})
-    //   console.log(existId)
-    //   if (existId) {
-    //     throw new Error('이미 중복된 아이디가 있습니다.');
-    //   }
-    //   return true;
-    //   }),
-    .custom(value  => {
-      return User.findOne({userId: value}).then(user => {
-        if (user) {
-          return Promise.reject('이미 중복된 아이디가 있습니다.');
-        }
-      });
-    }),
+    .custom(async  (value) =>   {
+      const existId = await User.findOne({userId: value})
+      console.log(existId)
+      if (existId) {
+        throw new Error('이미 중복된 아이디가 있습니다.');
+      }
+      return true;
+      }),
     async (req, res) => {
       //요청에 검증에러가 있으면 찾아줌
       const errors = validationResult(req);
@@ -76,13 +83,6 @@ router.post(
   body('userName')
     .notEmpty()
     .trim()
-    // .custom(async (value)  => {
-    //   const existName = await User.findOne({ userName: value })
-    //   if (existName) {
-    //     throw new Error('이미 중복된 닉네임이 있습니다.');
-    //   }
-    //   return true;
-    //   }),
     .custom(value => {
       return User.findOne({userId: value}).then(user => {
         if (user) {
@@ -117,12 +117,11 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
   const { userId, password, pwConfirm, userName, gender } = req.body;
+  // const { userProfile } = req.file;
   
   const users = new User({ userId, password, userName, gender });
+  console.log(users)
   await users.save();
-
-  // const createdUser = await URLSearchParams.create({ userId, password, userName, gender, userProfile });
-
   res.status(201).send("회원가입 성공!")
 });
 
@@ -139,7 +138,7 @@ router.post('/login', async (req, res) => {
       });
       return;
   }
-  const token = jwt.sign({ userId: user.userId }, mykey);
+  const token = jwt.sign({ userId: user.userId, userName: user.userName }, mykey);
   res.send({
       token,
   });
@@ -154,15 +153,5 @@ router.post('/loginInfo', async (req, res) => {
   res.json({ userInfo })
   console.log(userInfo);
 });
-  
-
-// //내 정보조회//
-// router.get('/auth', authMiddleware, async (req, res) => {
-//   //locals에 있는 사용자정보 가져오기
-//   const { user } = res.locals;
-//   res.send({
-//       user,
-//   });
-// });
 
 module.exports = router;
