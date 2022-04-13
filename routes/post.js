@@ -53,7 +53,9 @@ router.put( '/detail/:id', upload.single('image'), // image upload middleware
             { _id: o_id },
             { $set: { content, title, date, image } }
         );
-      res.sendStatus(200);
+        res.status(200).send({
+          message: '수정 완료',
+        });
     } catch (err) {
       next(err);
     }

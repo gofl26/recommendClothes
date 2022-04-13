@@ -27,9 +27,9 @@ app.use('/api', express.urlencoded({ extended: false }), postsRouter);
 app.use('/api', express.urlencoded({ extended: false }), usersRouter);
 app.use('/api', express.urlencoded({ extended: false }), commentsRouter);
 
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/static/index.html');
-});
+// app.get('/', (req, res) => {
+//     res.sendFile(__dirname + '/static/index.html');
+// });
 
 // //CORS 테스트 (https://test-cors.org)
 // const corsOption = {
