@@ -22,7 +22,7 @@ router.post( '/postWrite', upload.single('image'), // image upload middleware
     const today = new Date();
     const date = today.toLocaleString();
     const { userId, title, content, userName } = req.body;
-    const image = req.file.location; // file.location에 저장된 객체imgURL
+    const image = req.file?.location; // file.location에 저장된 객체imgURL
     try {
       await Posts.create({
         userId,
@@ -32,9 +32,13 @@ router.post( '/postWrite', upload.single('image'), // image upload middleware
         date,
         image,
       });
-      res.sendStatus(200);
+      res.status(200).send({
+        message: '포스트 완료',
+      });
     } catch (err) {
-      next(err);
+      res.status(400).send({
+        message: '포스트 완료',
+      });
     }
   }
 );
