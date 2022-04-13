@@ -5,7 +5,7 @@ const mykey = fs.readFileSync(__dirname + '/key.txt').toString();
 
 module.exports = (req, res, next) => {
     const { authorization } = req.headers;
-    const [tokenType, tokenValue] = authorization.split(' ');
+    const [tokenType, tokenValue] = (authorization || '').split(' ');
 
     if (tokenType !== 'Bearer') {
         res.status(401).send({

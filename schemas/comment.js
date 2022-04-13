@@ -26,12 +26,12 @@ const commentsSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    // userProfile: {
-    //     type: String,
-    // },
-    // image: {
-    //     type: String,
-    // },
+    userProfile: {
+        type: String,
+    },
+    image: {
+        type: String,
+    },
     // like: {
     //     type: Number,
     // },

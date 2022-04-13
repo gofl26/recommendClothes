@@ -5,65 +5,65 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const authMiddleware = require('../middlewares/auth-middleware');
 const { collection } = require('../schemas/comment');
+const upload = require('../S3/s3');
 
 router.get('/', (req, res) => {
     res.send('this is root page');
 });
 
 // 코멘트등록
-router.post('/comment/:id', authMiddleware, async (req, res) => {
-    const { id } = req.params;
+router.post(
+    '/comment/:id',
+    authMiddleware,
+    upload.single('image'),
+    async (req, res) => {
+        const { id } = req.params;
 
-    let today = new Date();
-    let date = today.toLocaleString();
+        let today = new Date();
+        let date = today.toLocaleString();
 
-    const { user } = res.locals;
-    let userId = user.userId;
-    // const exist = await Comments.findById('62555dc700c7e8afe8dc14b7');
-    // console.log(exist);
+        const { user } = res.locals;
+        console.log(user);
+        let userId = user.userId;
+        // const exist = await Comments.findById('62555dc700c7e8afe8dc14b7');
+        // console.log(exist);
 
-    let userName = user.userName;
+        let userName = user.userName;
 
-    const { comment } = req.body;
+        const { comment } = req.body;
+        const image = req.file.location;
 
-    // if (!comment) {
-    //     return res.status(400).json({
-    //         errorMessage: ' 댓글을 입력해 주세요',
-    //     });
-    // }
+        try {
+            await Comments.create({
+                postId: id,
+                userId,
+                userName,
+                comment,
+                // commentId,
+                date,
+                userProfile,
+                image,
+            });
+            res.sendStatus(200);
+        } catch (err) {
+            next(err);
+        }
 
-    // const CryptoJS = require('crypto-js');
-    // const moment = require('moment');
-    // require('moment-timezone');
-    // moment.tz.setDefault('Asia/Seoul');
-    // const NowDate = String(moment().format('YYYY-MM-DD HH:mm:ss'));
-    // const commentNum = CryptoJS.SHA256(NowDate)['words'][0];
+        // const createdComment = await Comments.create({
+        //     postId: id,
+        //     userId,
+        //     userName,
+        //     comment,
+        //     // commentId,
+        //     // image,
+        //     date,
+        // });
 
-    // let commentId = 0;
-    // const Comment_list = await Comments.find();
-    // if (Comment_list.length) {
-    //     num = Comment_list[Comment_list.length - 1]['num'] + 1;
-    // } else {
-    //     num = 1;
-    // }
-
-    // const postId = existsPosts[existsPosts.length-1]+1;
-
-    const createdComment = await Comments.create({
-        postId: id,
-        userId,
-        userName,
-        comment,
-        // commentId,
-        // image,
-        date,
-    });
-
-    res.json({
-        post: createdComment,
-        msg: '댓글 등록 완료!!',
-    });
-});
+        // res.json({
+        //     msg: '댓글 등록 완료!!',
+        // });
+    }
+);
 
 // 코멘트조회
 router.get('/comment/:id', async (req, res) => {
