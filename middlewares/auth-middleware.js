@@ -7,9 +7,9 @@ module.exports = (req, res, next) => {
     const { authorization } = req.headers;
     const [tokenType, tokenValue] = (authorization || '').split(' ');
 
-    if (tokenType !== 'Bearer') {
+    if (!tokenValue || tokenType !== 'Bearer') {
         res.status(401).send({
-            errorMEssage: '로그인 후 사용하세요',
+            errorMessage: '로그인 후 사용하세요!',
         });
         return;
     }
@@ -27,7 +27,7 @@ module.exports = (req, res, next) => {
             });
     } catch (error) {
         res.status(401).send({
-            errorMEssage: '로그인 후 사용하세요',
+            errorMEssage: '로그인 하시고 사용하세요',
         });
         return;
     }

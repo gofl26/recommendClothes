@@ -25,6 +25,7 @@ router.post(
         const { user } = res.locals;
         console.log(user);
         let userId = user.userId;
+        let userProfile = user.userProfile;
         // const exist = await Comments.findById('62555dc700c7e8afe8dc14b7');
         // console.log(exist);
 
