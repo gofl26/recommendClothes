@@ -32,7 +32,7 @@ router.post(
         let userName = user.userName;
 
         const { comment } = req.body;
-        const image = req.file.location;
+        const image = req.file?.location; // 파일 없을때,
 
         try {
             await Comments.create({
@@ -47,7 +47,7 @@ router.post(
             });
             res.sendStatus(200);
         } catch (err) {
-            next(err);
+            res.sendStatus(400);
         }
 
         // const createdComment = await Comments.create({
@@ -87,7 +87,7 @@ router.post('/updatecomment/:id', authMiddleware, async (req, res) => {
     const { id } = req.params;
     const { commentId } = req.body;
 
-    let comment = await Comments.find({ commentId: commentId });
+    let comment = await Comments.find({ postId: id, commentId: commentId });
 
     res.send({
         comment,
@@ -96,20 +96,17 @@ router.post('/updatecomment/:id', authMiddleware, async (req, res) => {
 
 // 코멘트수정 업데이트
 router.put('/updatecomment/:id', authMiddleware, async (req, res) => {
-    // const { id } = req.params;
-    // const { title } = req.body;
-    // const { content } = req.body;
-    // const { name } = req.body;
-    // const { password } = req.body;
-    const { comment, commentId } = req.body;
+    const { postId } = req.params.id;
+    const { comment, commentId, userId, userName, userProfile, image, date } =
+        req.body;
+    console.log('ff', req.body);
+    // const comment_Id = new Object(commentId);
 
-    const existComment = await Comments.find({ commentId: commentId });
+    const existComment = await Comments.find({ _id: commentId });
+    console.log('aa', existComment);
 
     if (existComment.length) {
-        await Comments.updateOne(
-            { commentId: commentId },
-            { $set: { comment } }
-        );
+        await Comments.updateOne({ _id: commentId }, { $set: { comment } });
     } else {
         return res.status(400).json({
             errorMessage: '잘못된 접근 입니다!!!',
