@@ -3,6 +3,10 @@ const Posts = require('../schemas/post');
 const router = express.Router();
 require('dotenv').config();
 const upload = require('../S3/s3');
+const AWS = require('aws-sdk');
+AWS.config.loadFromPath(__dirname + '/s3config.json');
+const s3 = new AWS.S3();
+
 
 router.get('/', (req, res) => {
     res.send('this is root page');
@@ -37,14 +41,14 @@ router.post( '/postWrite', upload.single('image'), // image upload middleware
       });
     } catch (err) {
       res.status(400).send({
-        message: '포스트 완료',
+        message: '포스트 실패',
       });
     }
   }
 );
 
 //글 수정하기API
-router.put( '/postEdit/:id', upload.single('image'), // image upload middleware
+router.post( '/postEdit/:id', upload.single('image'), // image upload middleware
   async (req, res, next) => {
     const { id } = req.params;
     const { content, title } = req.body;
@@ -52,6 +56,21 @@ router.put( '/postEdit/:id', upload.single('image'), // image upload middleware
     const today = new Date();
     const date = today.toLocaleString();
     const image = req.file.location; // file.location에 저장된 객체imgURL
+    const [detail] = await Posts.find({ _id : o_id }); 
+    console.log(detail)
+    const imagecheck = detail.image
+    console.log(imagecheck)
+    const deleteimage = imagecheck.split('/')[3];
+    console.log(deleteimage)
+    s3.putObject({
+      Bucket: 'image-posting',
+      Key: `${deleteimage}`
+    }, (err, data) => {
+      console.log(err)
+      if (err) { 
+        throw err
+      }
+    });
     
     try {
         await Posts.updateOne(
@@ -63,7 +82,9 @@ router.put( '/postEdit/:id', upload.single('image'), // image upload middleware
           message: '수정 완료',
         });
     } catch (err) {
-      next(err);
+      res.status(400).send({
+        message: '수정 실패',
+      });
     }
   }
 );
@@ -92,7 +113,9 @@ router.delete('/detail/:id', async (req, res) => {
         await Comments.deleteMany({ postId: o_id });
     }
 
-    res.json({ success: true });
+    res.status(200).send({
+      message: '삭제 완료',
+    });
 });
 
 module.exports = router;
