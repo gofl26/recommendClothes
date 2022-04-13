@@ -52,10 +52,12 @@ router.post( '/postEdit/:id', upload.single('image'), // image upload middleware
   async (req, res, next) => {
     const { id } = req.params;
     const { content, title } = req.body;
+    console.log(content, title, id)
     const o_id = new Object(id)
     const today = new Date();
     const date = today.toLocaleString();
     const image = req.file?.location; // file.location에 저장된 객체imgURL
+    console.log("image",image);
     const [detail] = await Posts.find({ _id : o_id }); 
     console.log(detail)
     const imagecheck = detail.image
