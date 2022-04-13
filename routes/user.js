@@ -2,126 +2,66 @@ const express = require('express');
 const User = require('../schemas/user');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const authMiddleware = require('../middlewares/auth-middleware');
-const { body, validationResult } = require('express-validator');
+//token key 보안처리
 const fs = require("fs");
 const mykey = fs.readFileSync(__dirname + "/../middlewares/key.txt").toString();
-
-const multer = require('multer');
-// 기타 express 코드
-// const upload = multer({ dest: 'uploads/' });
-const upload = multer({
-  storage: multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, 'uploads/');
-    },
-    filename: function (req, file, cb) {
-      cb(null, file.originalname);
-    }
-  }),
-});
+//multer-s3 미들웨어 연결
+require('dotenv').config();
+const upload = require('../S3/s3');
 
 router.get('/', (req, res) => {
   res.send('this is root page');
 });
 
-//회원가입-프로필 사진 등록//
-router.post('/profile', upload.single('userProfile'), async (req, res) => {
-  const userProfile = req.file.originalname;
-  // const profiles = new Profile({ userProfile });
-  // console.log(profiles)
-  // await profiles.save();
-  console.log(userProfile)
-  res.send("사진이 등록되었습니다.");
-});
 
-// //프로필 사진 불러오기
-// router.get('/profileGet', async (req, res) => {
-//   const posts = await profiles.find();
-//   res.json({
-//       posts: posts,
-//   });
-// });
-
-
-//회원가입-아이디 중복 검사//
-router.post(
-  "/idCheck", 
-  // notEmpty: 비어있으면 컷!, trim: 공백없애기, isLength: 문자길이지정, isAlphanumeric: 숫자와 문자만 있는지 체크
-  body('userId')
-    .notEmpty()
-    .withMessage('아이디를 입력해주세요.')
-    .trim()
-    .isLength({ min: 3 })
-    .withMessage('아이디가 3글자 이상인지 확인해주세요.')
-    .isAlphanumeric()
-    .withMessage('아이디는 영문과 숫자만 사용가능합니다.')
-    .custom(async  (value) =>   {
-      const existId = await User.findOne({userId: value})
-      console.log(existId)
-      if (existId) {
-        throw new Error('이미 중복된 아이디가 있습니다.');
-      }
-      return true;
-      }),
-    async (req, res) => {
-      //요청에 검증에러가 있으면 찾아줌
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
-    res.status(201).send("사용할 수 있는 아이디입니다.")
+//회원가입-아이디 중복 검사(정규식 사용)//
+router.post("/idCheck", async (req, res, next) => {
+  try {
+    const regexr = /^[A-Za-z0-9]{4,10}$/;
+    const userId = req.body.userId;
+    const IdCheck = await User.findOne({ userId });
+    if (!regexr.test(userId)) {
+      return res.status(403).send('아이디는 알파벳 대/소문자 또는 숫자만 사용가능하며 4~10글자여야 합니다.');
+    } else if (IdCheck) {
+      return res.status(403).send('이미 사용중인 아이디입니다.');
+    }
+    res.status(201).send('사용할 수 있는 아이디입니다.')
+  } catch (error) {
+    console.log(error);
+    next(error);
+  };
 });
 
 
-// 회원가입 //
-router.post(
-  "/signup",
-  //닉네임 중복 검사
-  body('userName')
-    .notEmpty()
-    .trim()
-    .custom(value => {
-      return User.findOne({userId: value}).then(user => {
-        if (user) {
-          return Promise.reject('이미 중복된 닉네임이 있습니다.');
-        }
-      });
-    }),
-  // 비밀번호는 최소 4자 이상이며, 닉네임과 같은 값이 포함된 경우 회원가입에 실패로 만들기
-  body('password')
-    .notEmpty()
-    .withMessage('비밀번호를 입력해주세요.')
-    .trim()
-    .isLength({ min: 4 })
-    .withMessage('비밀번호는 4자 이상이어야 합니다.')
-    .custom((value, { req }) => {
-      if (value.includes(req.body.userName)) {
-        throw new Error('비밀번호에 닉네임이 포함되어 있습니다.');
-      }
-      return true;
-    }),
-
-  // 비밀번호와 비밀번호 확인이 정확하게 일치하는지 확인
-  body('pwConfirm').custom((value, { req }) => {
-    if (value !== req.body.password) {
-      throw new Error('비밀번호와 비밀번호확인이 동일한지 확인해주세요.');
+// 회원가입(정규식 사용) + 프로필사진첨부 //
+router.post("/signup", upload.single('userProfile'), async (req, res, next) => {
+  const userProfile = req.file.location; // file.location에 저장된 객체imgURL
+  try {
+    const regexr = /^.{1,10}$/;
+    const regexr1 = /^.{4,25}$/;
+    const { userId, password, pwConfirm, userName, gender } = req.body;
+    const NickCheck = await User.findOne({ userName });
+    if (!regexr.test(userName)) {
+      return res.status(403).send('닉네임은 1~10글자입니다.');
+    } else if (NickCheck) {
+      return res.status(403).send('이미 사용중인 닉네임입니다.');
+    } else if (!regexr1.test(password)) {
+      return res.status(403).send('비밀번호는 4자리 이상입니다.');
+    } else if (password !== pwConfirm) {
+      return res.status(403).send('비밀번호가 일치하지 않습니다.');
     }
-    return true;
-  }),
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-  const { userId, password, pwConfirm, userName, gender } = req.body;
-  // const { userProfile } = req.file;
-  
-  const users = new User({ userId, password, userName, gender });
-  console.log(users)
-  await users.save();
-  res.status(201).send("회원가입 성공!")
+    await User.create({
+      userId,
+      password,
+      userName,
+      gender,
+      userProfile,
+    })
+    res.status(201).send('회원가입이 완료되었습니다.')
+  } catch (error) {
+    console.log(error);
+    next(error);
+  };
 });
 
 
