@@ -22,7 +22,7 @@ router.post( '/postWrite', upload.single('image'), // image upload middleware
     const today = new Date();
     const date = today.toLocaleString();
     const { userId, title, content, userName } = req.body;
-    const image = req.file.location; // file.location에 저장된 객체imgURL
+    const image = req.file?.location; // file.location에 저장된 객체imgURL
     try {
       await Posts.create({
         userId,
@@ -32,15 +32,19 @@ router.post( '/postWrite', upload.single('image'), // image upload middleware
         date,
         image,
       });
-      res.sendStatus(200);
+      res.status(200).send({
+        message: '포스트 완료',
+      });
     } catch (err) {
-      next(err);
+      res.status(400).send({
+        message: '포스트 완료',
+      });
     }
   }
 );
 
 //글 수정하기API
-router.put( '/detail/:id', upload.single('image'), // image upload middleware
+router.put( '/postEdit/:id', upload.single('image'), // image upload middleware
   async (req, res, next) => {
     const { id } = req.params;
     const { content, title } = req.body;
@@ -48,11 +52,13 @@ router.put( '/detail/:id', upload.single('image'), // image upload middleware
     const today = new Date();
     const date = today.toLocaleString();
     const image = req.file.location; // file.location에 저장된 객체imgURL
+    
     try {
         await Posts.updateOne(
             { _id: o_id },
             { $set: { content, title, date, image } }
         );
+        
         res.status(200).send({
           message: '수정 완료',
         });

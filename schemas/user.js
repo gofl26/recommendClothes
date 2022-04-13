@@ -17,9 +17,10 @@ const UserSchema = new mongoose.Schema({
     },
     userProfile: {
         type: String,
+        required: true,
     },
     gender: {
-        type: Boolean,
+        type: String,
         required: true,
     },
 });
