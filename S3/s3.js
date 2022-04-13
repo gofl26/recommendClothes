@@ -9,13 +9,13 @@ const upload = multer({
     storage: multerS3({
         s3: s3,
         bucket: 'image-posting',
-        contentType: multerS3.AUTO_CONTENT_TYPE,  // image/jpeg
+        contentType: multerS3.AUTO_CONTENT_TYPE, // image/jpeg
         key: function (req, file, cb) {
             const extension = path.extname(file.originalname);
             cb(null, Date.now().toString() + extension);
         },
         acl: 'public-read-write',
-    }),
+    }), // 용량 제한
 });
 
 module.exports = upload;

@@ -1,7 +1,8 @@
 const express = require('express');
 const Posts = require('../schemas/post');
 const router = express.Router();
-
+require('dotenv').config();
+const upload = require('../S3/s3');
 
 router.get('/', (req, res) => {
     res.send('this is root page');
@@ -16,35 +17,54 @@ router.get('/postGet', async (req, res) => {
 });
 
 //글 등록하기API
-router.post('/postWrite', async (req, res) => {
+router.post( '/postWrite', upload.single('image'), // image upload middleware
+  async (req, res, next) => {
     const today = new Date();
     const date = today.toLocaleString();
-    const { userName, title, content, userId } = req.body;
-    
-    const createdPost = await Posts.create({
+    const { userId, title, content, userName } = req.body;
+    const image = req.file?.location; // file.location에 저장된 객체imgURL
+    try {
+      await Posts.create({
         userId,
-        content,
         title,
         userName,
+        content,
         date,
-    });
-    res.json({ post: createdPost });
-});
+        image,
+      });
+      res.status(200).send({
+        message: '포스트 완료',
+      });
+    } catch (err) {
+      res.status(400).send({
+        message: '포스트 완료',
+      });
+    }
+  }
+);
 
 //글 수정하기API
-router.put('/detail/:id', async (req, res) => {
+router.put( '/detail/:id', upload.single('image'), // image upload middleware
+  async (req, res, next) => {
     const { id } = req.params;
     const { content, title } = req.body;
+    const o_id = new Object(id)
     const today = new Date();
     const date = today.toLocaleString();
-
-    const createdPost = await Posts.updateOne(
-        { postId: id },
-        { $set: { content, title, date } }
-    );
-
-    res.json({ post: createdPost });
-});
+    const image = req.file.location; // file.location에 저장된 객체imgURL
+    try {
+        await Posts.updateOne(
+            { _id: o_id },
+            { $set: { content, title, date, image } }
+        );
+        res.status(200).send({
+          message: '수정 완료',
+        });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 //글 상세조회API
 router.get('/detail/:id', async (req, res) => {

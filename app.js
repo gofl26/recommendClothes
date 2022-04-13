@@ -29,9 +29,9 @@ app.use('/api', express.urlencoded({ extended: false }), postsRouter);
 app.use('/api', express.urlencoded({ extended: true }), usersRouter);
 app.use('/api', express.urlencoded({ extended: false }), commentsRouter);
 
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/static/index.html');
-});
+// app.get('/', (req, res) => {
+//     res.sendFile(__dirname + '/static/index.html');
+// });
 
 //CORS 테스트 (https://test-cors.org)
 //origin: 'http://google.com', 구글에서만 데이터를 처리하는 것. 이래야 해커의 위협에서 보호가능

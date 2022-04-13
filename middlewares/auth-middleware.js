@@ -5,11 +5,17 @@ const mykey = fs.readFileSync(__dirname + '/key.txt').toString();
 
 module.exports = (req, res, next) => {
     const { authorization } = req.headers;
+    if(!authorization){
+        res.status(401).send({
+            errorMEssage: '로그인 후 사용하세요',
+        });
+        return;
+    }
     const [tokenType, tokenValue] = authorization.split(' ');
 
     if (tokenType !== 'Bearer') {
         res.status(401).send({
-            errorMEssage: '로그인 후 사용하세요',
+            errorMessage: '로그인 후 사용하세요!',
         });
         return;
     }
@@ -27,7 +33,7 @@ module.exports = (req, res, next) => {
             });
     } catch (error) {
         res.status(401).send({
-            errorMEssage: '로그인 후 사용하세요',
+            errorMEssage: '로그인 하시고 사용하세요',
         });
         return;
     }
