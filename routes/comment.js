@@ -74,9 +74,9 @@ router.get('/comment/:id', async (req, res) => {
     // const { user } = res.locals;
     // let userName = user.userName;
 
-    const comment = await (
-        await Comments.find({ postId: id }).sort({ date })
-    ).reverse();
+    const comment = await Comments.find({ postId: id })
+        .sort({ date })
+        .reverse();
     // const [post] = await Posts.find({ postId: id });
 
     res.json({
