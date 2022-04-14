@@ -1,5 +1,6 @@
 const express = require('express');
 const Posts = require('../schemas/post');
+const Comments = require('../schemas/comment');
 const router = express.Router();
 require('dotenv').config();
 const authMiddleware = require('../middlewares/auth-middleware');
