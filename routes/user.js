@@ -18,16 +18,17 @@ router.get('/', (req, res) => {
 router.post("/idCheck", async (req, res, next) => {
   try {
     const regexr = /^[A-Za-z0-9]{4,10}$/;
-    const userId = req.body.userId;
+    const {userId} = req.body;
     const IdCheck = await User.findOne({ userId });
     if (!regexr.test(userId)) {
       return res.status(403).send('아이디는 알파벳 대/소문자 또는 숫자만 사용가능하며 4~10글자여야 합니다.');
     } else if (IdCheck) {
       return res.status(403).send('이미 사용중인 아이디입니다.');
     }
-    res.status(201).send('사용할 수 있는 아이디입니다.')
+    res.status(201).send('사용할 수 있는 아이디입니다.');
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    // res.status(400).send('오류발생');
     next(error);
   };
 });
@@ -39,7 +40,7 @@ router.post("/signup", upload.single('userProfile'), async (req, res, next) => {
   try {
     const regexr = /^.{1,10}$/;
     const regexr1 = /^.{4,25}$/;
-    const { userId, password, pwConfirm, userName, gender } = req.body;
+    const { userId, userName, password, pwConfirm, gender } = req.body;
     const NickCheck = await User.findOne({ userName });
     if (!regexr.test(userName)) {
       return res.status(403).send('닉네임은 1~10글자입니다.');
@@ -52,18 +53,18 @@ router.post("/signup", upload.single('userProfile'), async (req, res, next) => {
     }
     await User.create({
       userId,
-      password,
       userName,
+      password,
       gender,
       userProfile,
     })
-    res.status(201).send('회원가입이 완료되었습니다.')
+    res.status(201).send('회원가입이 완료되었습니다.');
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    res.status(400).send('아이디 중복체크를 해주세요.');
     next(error);
   };
 });
-
 
 //로그인//
 router.post('/login', async (req, res) => {
