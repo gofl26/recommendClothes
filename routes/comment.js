@@ -33,6 +33,7 @@ router.post(
 
         const { comment } = req.body;
         const image = req.file?.location; // 파일 없을때,
+        // const image = req.file.location;
 
         try {
             await Comments.create({
@@ -48,6 +49,7 @@ router.post(
             res.sendStatus(200);
         } catch (err) {
             res.sendStatus(400);
+            // next(err);
         }
 
         // const createdComment = await Comments.create({
@@ -72,7 +74,7 @@ router.get('/comment/:id', async (req, res) => {
     // const { user } = res.locals;
     // let userName = user.userName;
 
-    const comment = await Comments.find({ postId: id });
+    const comment = await Comments.find({ postId: id }).sort({ date: -1 });
     // const [post] = await Posts.find({ postId: id });
 
     res.json({
@@ -87,7 +89,7 @@ router.post('/updatecomment/:id', authMiddleware, async (req, res) => {
     const { id } = req.params;
     const { commentId } = req.body;
 
-    let comment = await Comments.find({ postId: id, commentId: commentId });
+    let comment = await Comments.find({ postId: id, _id: commentId });
 
     res.send({
         comment,
@@ -121,12 +123,12 @@ router.delete('/comment/:id', authMiddleware, async (req, res) => {
     let { id } = req.params; // 로그인을 한 후 맞는 사용자에게만 댓글 수정 ,삭제 버튼이 보이기때문에 필요가 없는가? -> 위쪽 조회에서 이미 userId와 비교가 되는것인가?
     let { commentId } = req.body; // 코멘트 아이디를 바디에서 받아온다 -> 어떻게 받아오지? 어디서?
 
-    const existComment = await Comments.find({ commentId: commentId });
+    const existComment = await Comments.find({ _id: commentId });
     // commentId를 Comment데이터베이스에서 찾아 commentId 로 일치하는것을 찾앚서 existComment변수에 할당
 
     if (existComment.length) {
         // existComment가 있으면 length는 최소1개가 되어 조건식이 true,
-        await Comments.deleteOne({ commentId: commentId }); // 위의 조건이 true일때 Comments 데이터베이스에서 commentId가 동일한것을 찾아 삭제 시킴
+        await Comments.deleteOne({ _id: commentId }); // 위의 조건이 true일때 Comments 데이터베이스에서 commentId가 동일한것을 찾아 삭제 시킴
     } else {
         return; // 조건식이 만족하지 않을때 return, 뒤의 실행문이 더이상 진행되지 않는다.
     }
