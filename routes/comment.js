@@ -74,7 +74,7 @@ router.get('/comment/:id', async (req, res) => {
     // const { user } = res.locals;
     // let userName = user.userName;
 
-    const comment = await Comments.find({ postId: id });
+    const comment = await Comments.find({ postId: id }).sort({ date: -1 });
     // const [post] = await Posts.find({ postId: id });
 
     res.json({
