@@ -133,7 +133,7 @@ router.delete('/detail/:id', async (req, res) => {
         await Comments.deleteMany({ postId: o_id });
     }
 
-    s3.deleteObject({
+    s3.putObject({
       Bucket: 'image-posting',
       Key: deleteimage
     }, (err, data) => {
