@@ -122,9 +122,9 @@ router.put('/updatecomment/:id', authMiddleware, async (req, res) => {
 // 코멘트삭제
 router.delete('/comment/:id', authMiddleware, async (req, res) => {
     let { id } = req.params; // 로그인을 한 후 맞는 사용자에게만 댓글 수정 ,삭제 버튼이 보이기때문에 필요가 없는가? -> 위쪽 조회에서 이미 userId와 비교가 되는것인가?
-    let { commentId } = req.body; // 코멘트 아이디를 바디에서 받아온다 -> 어떻게 받아오지? 어디서?
-    console.log("commentId", commentId)
-    const existComment = await Comments.find({ _id: commentId });
+    // let { commentId } = req.body; // 코멘트 아이디를 바디에서 받아온다 -> 어떻게 받아오지? 어디서?
+    // console.log("commentId", commentId)
+    const existComment = await Comments.find({ _id: id });
     // commentId를 Comment데이터베이스에서 찾아 commentId 로 일치하는것을 찾앚서 existComment변수에 할당
     console.log("existComment", existComment)
     if (existComment.length) {
