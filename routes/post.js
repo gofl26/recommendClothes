@@ -15,8 +15,9 @@ router.get('/', (req, res) => {
 //포스트 목록 불러오기(코디추천 버튼 누르면 실행)
 router.get('/postGet', async (req, res) => {
     const posts = await Posts.find();
+    const posts1 = posts.reverse();
     res.json({
-        posts: posts,
+        posts: posts1,
     });
 });
 
