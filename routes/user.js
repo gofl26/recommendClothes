@@ -41,11 +41,8 @@ router.post("/signup", upload.single('userProfile'), async (req, res, next) => {
     const regexr = /^.{1,10}$/;
     const regexr1 = /^.{4,25}$/;
     const { userId, userName, password, pwConfirm, gender } = req.body;
-    const NickCheck = await User.findOne({ userName });
     if (!regexr.test(userName)) {
       return res.status(403).send('닉네임은 1~10글자입니다.');
-    } else if (NickCheck) {
-      return res.status(403).send('이미 사용중인 닉네임입니다.');
     } else if (!regexr1.test(password)) {
       return res.status(403).send('비밀번호는 4자리 이상입니다.');
     } else if (password !== pwConfirm) {
