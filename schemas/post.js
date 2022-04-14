@@ -23,11 +23,8 @@ const postsSchema = mongoose.Schema({
     },
     image: {
         type: String,
-        
+        required: true,
     },
-    // like: {
-    //     type: Number,
-    // },
 });
 
 postsSchema.virtual('postId').get(function () {
