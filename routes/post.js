@@ -119,9 +119,11 @@ router.delete('/detail/:id', async (req, res) => {
     const existsPosts = await Posts.find({ _id : o_id });
 
     const [detail] = await Posts.find({ _id : o_id }); 
+    console.log("detail",detail)
     const imagecheck = detail.image
+    console.log("imagecheck",imagecheck)
     const deleteimage = imagecheck.split('/')[3];
-
+    console.log("deleteimage",deleteimage)
     if (existsPosts.length) {
         await Posts.deleteOne({ _id : o_id });
     }
