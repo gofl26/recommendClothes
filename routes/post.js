@@ -135,7 +135,8 @@ router.delete('/detail/:id', async (req, res) => {
 
     s3.deleteObject({
       Bucket: 'image-posting',
-      Key: deleteimage
+      Key: deleteimage,
+      acl: 'public-read-write',
     }, (err, data) => {
       console.log(err)
       if (err) { 
