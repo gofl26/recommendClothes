@@ -25,6 +25,9 @@ const postsSchema = mongoose.Schema({
         type: String,
         required: true,
     },
+    userProfile: {
+        type: String,
+    },
 });
 
 postsSchema.virtual('postId').get(function () {

@@ -2,6 +2,7 @@ const express = require('express');
 const Posts = require('../schemas/post');
 const router = express.Router();
 require('dotenv').config();
+const authMiddleware = require('../middlewares/auth-middleware');
 const upload = require('../S3/s3');
 const AWS = require('aws-sdk');
 AWS.config.loadFromPath(__dirname + '/s3config.json');
@@ -22,10 +23,12 @@ router.get('/postGet', async (req, res) => {
 });
 
 //글 등록하기API
-router.post( '/postWrite', upload.single('image'), // image upload middleware
+router.post( '/postWrite', authMiddleware, upload.single('image'), // image upload middleware
   async (req, res, next) => {
     const today = new Date();
     const date = today.toLocaleString();
+    const { user } = res.locals;
+    let userProfile = user.userProfile;
     const { userId, title, content, userName } = req.body;
     const image = req.file?.location; // file.location에 저장된 객체imgURL
     try {
@@ -36,6 +39,7 @@ router.post( '/postWrite', upload.single('image'), // image upload middleware
         content,
         date,
         image,
+        userProfile,
       });
       res.status(200).send({
         message: '포스트 완료',
