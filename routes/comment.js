@@ -129,7 +129,7 @@ router.delete('/comment/:id', authMiddleware, async (req, res) => {
     console.log("existComment", existComment)
     if (existComment.length) {
         // existComment가 있으면 length는 최소1개가 되어 조건식이 true,
-        await Comments.deleteOne({ _id: commentId }); // 위의 조건이 true일때 Comments 데이터베이스에서 commentId가 동일한것을 찾아 삭제 시킴
+        await Comments.deleteOne({ _id: id }); // 위의 조건이 true일때 Comments 데이터베이스에서 commentId가 동일한것을 찾아 삭제 시킴
     } else {
         return; // 조건식이 만족하지 않을때 return, 뒤의 실행문이 더이상 진행되지 않는다.
     }
