@@ -117,6 +117,11 @@ router.delete('/detail/:id', async (req, res) => {
     const { id } = req.params;
     const o_id = new Object(id)
     const existsPosts = await Posts.find({ _id : o_id });
+
+    const [detail] = await Posts.find({ _id : o_id }); 
+    const imagecheck = detail.image
+    const deleteimage = imagecheck.split('/')[3];
+
     if (existsPosts.length) {
         await Posts.deleteOne({ _id : o_id });
     }
@@ -125,6 +130,15 @@ router.delete('/detail/:id', async (req, res) => {
         await Comments.deleteMany({ postId: o_id });
     }
 
+    s3.deleteObject({
+      Bucket: 'image-posting',
+      Key: deleteimage
+    }, (err, data) => {
+      console.log(err)
+      if (err) { 
+        throw err
+      }
+    });
     res.status(200).send({
       message: '삭제 완료',
     });
