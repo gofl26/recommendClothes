@@ -123,10 +123,10 @@ router.put('/updatecomment/:id', authMiddleware, async (req, res) => {
 router.delete('/comment/:id', authMiddleware, async (req, res) => {
     let { id } = req.params; // 로그인을 한 후 맞는 사용자에게만 댓글 수정 ,삭제 버튼이 보이기때문에 필요가 없는가? -> 위쪽 조회에서 이미 userId와 비교가 되는것인가?
     let { commentId } = req.body; // 코멘트 아이디를 바디에서 받아온다 -> 어떻게 받아오지? 어디서?
-
+    console.log("commentId", commentId)
     const existComment = await Comments.find({ _id: commentId });
     // commentId를 Comment데이터베이스에서 찾아 commentId 로 일치하는것을 찾앚서 existComment변수에 할당
-
+    console.log("existComment", existComment)
     if (existComment.length) {
         // existComment가 있으면 length는 최소1개가 되어 조건식이 true,
         await Comments.deleteOne({ _id: commentId }); // 위의 조건이 true일때 Comments 데이터베이스에서 commentId가 동일한것을 찾아 삭제 시킴
